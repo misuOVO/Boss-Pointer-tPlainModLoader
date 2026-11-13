@@ -1,0 +1,6 @@
+{
+  "name": "boss指针",
+  "author": "kgoyo (port by 丷米苏丷)",
+  "jumpPath": null,
+  "description": "在你身边显示指向 Boss 的箭头，箭头的大小和透明度会随距离变化。\n打开大地图时自动隐藏。\n可以在“模组设置”里调整距离、大小、透明度、开关按键，以及是否隐藏已在屏幕内的 Boss。"
+}

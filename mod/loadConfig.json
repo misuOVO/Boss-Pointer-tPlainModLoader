@@ -1,0 +1,7 @@
+{
+  "key": "Replica.BossCursor",
+  "version": "1.0.0",
+  "isEnable": true,
+  "dllPath": "BossCursor.dll",
+  "frontModKeys": null
+}
