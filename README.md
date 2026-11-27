@@ -1,6 +1,6 @@
 # boss指针 — tPlainModLoader 移植
 
-把 tModLoader 模组 **Boss Cursor**（作者 kgoyo，GPL-3.0）移植到 **tPlainModLoader / Terraria 1.4.5.8**，版本 1.0.0。
+把 tModLoader 模组 **Boss Cursor**（作者 kgoyo，GPL-3.0）移植到 **tPlainModLoader / Terraria 1.4.6.1**，版本 1.0.1。
 
 原项目：https://github.com/kgoyo/BossCursor
 
