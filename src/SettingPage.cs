@@ -1,8 +1,8 @@
-using System;
+﻿using System;
 using Terraria.UI;
 using tContentPatch;
 using tContentPatch.Content.UI;
-using tContentPatch.Content.UI.ModSet;
+using tContentPatch.Content.UI.Item1;
 
 namespace BossCursor
 {
@@ -44,8 +44,8 @@ namespace BossCursor
         private UIItemSwitch Switch(string label, Func<bool> get, Action<bool> set)
         {
             UIItemSwitch item = new UIItemSwitch(null, label);
-            item.SetVal(get());
-            item.OnValUpdate = v =>
+            item.OnGetIsChecked = get;
+            item.OnSetIsChecked = v =>
             {
                 set(v);
                 Commit();
@@ -53,26 +53,35 @@ namespace BossCursor
             return item;
         }
 
-        private UIItemValueSlider Slider(string label, float min, float max, Func<float> get, Action<float> set, bool isInt = false)
+        private UIElement Slider(string label, float min, float max, Func<float> get, Action<float> set, bool isInt = false)
         {
-            UIItemValueSlider item = isInt
-                ? new UIItemValueSlider((int)min, (int)max, null, label)
-                : new UIItemValueSlider(min, max, null, label);
-
-            item.FloatToString = v => isInt ? v.ToString("0") : v.ToString("0.0");
-
-            item.SetVal(get());
-            item.OnValUpdate = v =>
+            if (isInt)
             {
-                set(isInt ? (float)Math.Round(v) : (float)Math.Round(v, 1));
+                UIItemValueSliderInt item = new UIItemValueSliderInt((int)min, (int)max, null, label);
+                item.ValueToString = v => v.ToString("0");
+                item.OnGetValue = () => (int)Math.Round(get());
+                item.OnSetValue = v =>
+                {
+                    set(v);
+                    Commit();
+                };
+                return item;
+            }
+
+            UIItemValueSliderFloat f = new UIItemValueSliderFloat(min, max, null, label);
+            f.ValueToString = v => v.ToString("0.0");
+            f.OnGetValue = get;
+            f.OnSetValue = v =>
+            {
+                set((float)Math.Round(v, 1));
                 Commit();
             };
-            return item;
+            return f;
         }
 
         public override UIElement GetUI()
         {
-            UIScrollViewer2 root = new UIScrollViewer2();
+            UIScrollViewer2 root = new UIScrollViewer2(false);
             root.Width.Precent = 1f;
             root.Height.Precent = 1f;
             root.ItemMargin = 4;
@@ -88,18 +97,17 @@ namespace BossCursor
             basic.Append(Switch("隐藏已出现在屏幕内的 Boss", () => M.HideOnScreen, v => M.HideOnScreen = v));
             basic.Append(Switch("屏蔽四柱（日耀/星云/星旋/星尘）", () => M.BlackListPillars, v => M.BlackListPillars = v));
 
-            UIItemTextBox keyBox = new UIItemTextBox(M.ToggleKey, 24, null, "开关按键（如 F8 / B）");
-            keyBox.OnLostFocus = () =>
+            UIItemKeybinding keyBox = new UIItemKeybinding(null, "开关按键（点一下再按 F8 / B）");
+            keyBox.OnGetBind = () => M.ToggleKey;
+            keyBox.OnSetBind = v =>
             {
-                string text = keyBox.GetText();
-                if (KeyUtil.TryParse(text, out _))
+                if (string.IsNullOrEmpty(v))
+                    return;
+
+                if (KeyUtil.TryParse(v, out _))
                 {
-                    M.ToggleKey = text.Trim().ToUpperInvariant();
+                    M.ToggleKey = v.Trim().ToUpperInvariant();
                     Commit();
-                }
-                else
-                {
-                    keyBox.SetText(M.ToggleKey);
                 }
             };
             basic.Append(keyBox);
